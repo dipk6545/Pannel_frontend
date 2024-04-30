@@ -9,11 +9,13 @@ import Contact from "./sections/Contact.jsx";
 import Services from "./sections/Services.jsx";
 import Login from "./sections/Login.jsx";
 import SignUp from "./sections/SignUp.jsx";
+import ErrorPage from "./sections/ErrorPage.jsx";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
+    errorElement:<ErrorPage /> ,
     children: [
       {
         path: "",
