@@ -10,42 +10,45 @@ import Services from "./sections/Services.jsx";
 import Login from "./sections/Login.jsx";
 import SignUp from "./sections/SignUp.jsx";
 import ErrorPage from "./sections/ErrorPage.jsx";
+import { RecoilRoot } from "recoil";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
-    errorElement:<ErrorPage /> ,
+    errorElement: <ErrorPage />,
     children: [
       {
         path: "",
-        element:<Home/>
+        element: <Home />,
       },
       {
         path: "/about",
-        element: <About/>
+        element: <About />,
       },
       {
-        path:"/contact",
-        element: <Contact />
+        path: "/contact",
+        element: <Contact />,
       },
       {
-        path:"/services",
-        element: <Services />
+        path: "/services",
+        element: <Services />,
       },
       {
-        path:"/login",
-        element: <Login />
+        path: "/login",
+        element: <Login />,
       },
       {
-        path:"/signup",
-        element: <SignUp />
-      }
+        path: "/signup",
+        element: <SignUp />,
+      },
     ],
   },
 ]);
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <RecoilRoot>
+      <RouterProvider router={router} />
+    </RecoilRoot>
   </React.StrictMode>
 );

@@ -3,11 +3,10 @@ import { NavLink, Link } from "react-router-dom";
 import Hamburger from "./Hamburger";
 
 const Navbar = () => {
-  const links = ["Home", "About", "Contact", "Services", "Login", "SignUp"];
+  const links = ["Home", "About", "Contact", "Services",, "SignUp", "Login"];
   const [className, setClassname] = useState("hidden md:block w-full md:w-auto");
   useEffect(()=>{
     window.addEventListener("resize", ()=>{
-      console.log(className);
       if(window.innerWidth>768){
         setClassname("hidden md:block w-full md:w-auto");
       }

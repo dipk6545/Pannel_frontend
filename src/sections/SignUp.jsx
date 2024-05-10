@@ -1,26 +1,74 @@
 import { useState } from "react";
-
+import { useNavigate } from "react-router-dom";
+import { alertState, tokenState } from "../recoil/atoms/atoms";
+import { useRecoilState } from "recoil";
 const SignUp = () => {
+  const navigate = useNavigate();
   const [agreement, setAgreement] = useState(false);
+  const [alert, setAlertState] = useRecoilState(alertState);
+  const [token, setTokenState] = useRecoilState(tokenState);
   const [values, setValues] = useState({
     username: "",
     email: "",
     password: "",
-    phonenumber: "",
+    phone: "",
   });
   const handleChange = (e, name) => {
     setValues({ ...values, [name]: e.target.value });
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      let response = await fetch("http://localhost:5000/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+        cache: 'default'
+      });
+      let res = await response.json();
+      if (response.status === 201) {
+        console.log(res);
+        setTokenState(res.token);
+        localStorage.setItem("token", res.token);
+        // setValues({
+        //   username: "",
+        //   email: "",
+        //   password: "",
+        //   phone: "",
+        // })
+        setAlertState({ message: "Registered Successfully", flag: true });
+        setTimeout(() => {
+          // navigate("/");
+          setAlertState({});
+        }, 2000);
+      }
+      else {
+        console.log(res);
+        let message = "";
+        Object.entries(res).forEach(([key, value]) => {
+          message += Object.keys(res).length > 1 ? value + ", " : value;
+        });
+        setAlertState({ message, flag: false });
+        setTimeout(() => {
+          setAlertState({});
+        }, 2000);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="bg-white dark:bg-gray-900">
-      <div className="container m-auto p-10 flex  flex-col md:flex-row">
-        <div className="w-full md:w-1/2 p-5 flex items-center justify-center
-                    transition duration-500 ease-in-out
-                    hover:animate-pulse hover:scale-110">
+      <div className="container m-auto md:p-10 flex  flex-col md:flex-row">
+        <div
+          className="md:w-1/2 p-5 flex items-center justify-center"
+        >
           <img
-            className="max-w-full md:rounded-s-lg rounded-lg transition duration-500 ease-in-out
-            hover:animate-pulse hover:scale-110"
+            className="w-full md:rounded-s-lg rounded-lg"
             src="https://shorturl.at/stFW1"
             alt=""
           />
@@ -30,7 +78,7 @@ const SignUp = () => {
             Registration Form
           </h1>
 
-          <form className="mx-auto w-full">
+          <form className="mx-auto w-full" onSubmit={handleSubmit}>
             <div className="mb-5 flex gap-5">
               <div className="w-1/2">
                 <label
@@ -106,7 +154,7 @@ const SignUp = () => {
               </label>
               <input
                 value={values.phone}
-                onChange={(e) => handleChange(e, "phonenumber")}
+                onChange={(e) => handleChange(e, "phone")}
                 type="number"
                 id="number"
                 className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light"
@@ -141,9 +189,9 @@ const SignUp = () => {
             </div>
             <button
               type="submit"
-              className={`text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 disabled:opacity-75 ${
-                agreement ? "" : "disabled:opacity-25 cursor-not-allowed"
-              }`}
+              // onClick={handleSubmit}
+              className={`text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 disabled:opacity-75 ${agreement ? "" : "disabled:opacity-25 cursor-not-allowed"
+                }`}
               disabled={!agreement}
             >
               Register new account

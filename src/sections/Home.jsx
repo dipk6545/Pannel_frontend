@@ -1,9 +1,10 @@
 import React from "react";
 import Card from "../components/Card";
+import { useNavigate } from "react-router-dom";
 const Home = () => {
   return (
     <div className="bg-white dark:bg-gray-900">
-      <div className="container flex flex-col lg:gap-20 items-center bg-white md:flex-row dark:bg-gray-900 max-w-screen-xl m-auto">
+      <div className="container flex flex-col items-center md:gap-8 bg-white md:flex-row dark:bg-gray-900 max-w-screen-xl m-auto p-5 md:p-5">
         <img
           className="object-cover w-full rounded-lg h-96 md:h-auto md:w-1/2 md:rounded-s-lg"
           src="https://shorturl.at/stFW1"
