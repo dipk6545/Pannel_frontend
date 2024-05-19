@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { alertState, tokenState } from "../recoil/atoms/atoms";
-import { useRecoilState } from "recoil";
+import { alertState, tokenState, userState } from "../recoil/atoms/atoms";
+import { useRecoilState, useRecoilValue } from "recoil";
+import Spinner from "../components/Spinner";
 
 /**
  * This is the Login component. It is a stateless functional component.
@@ -16,7 +17,9 @@ import { useRecoilState } from "recoil";
 const Login = () => {
   const navigate = useNavigate();
   const [alert, setAlertState] = useRecoilState(alertState);
+  const [user, setUserState] = useRecoilState(userState);
   const [token, setTokenState] = useRecoilState(tokenState);
+  const [spin, setSpin] = useState(false);
   const [values, setValues] = useState({
     email: "",
     password: "",
@@ -44,6 +47,7 @@ const Login = () => {
       if (response.status === 200) {
         setTokenState(res.token);
         localStorage.setItem("token", res.token);
+        setUserState(res);
         setValues({
           email: "",
           password: "",
@@ -70,6 +74,9 @@ const Login = () => {
 
   return (
     <div className="bg-white dark:bg-gray-900">
+      {
+        spin && <Spinner />
+      }
       <div className="container flex flex-col items-center md:gap-8 bg-white md:flex-row dark:bg-gray-900 max-w-screen-xl m-auto p-5 md:p-5">
         <img
           className="object-cover w-full rounded-lg h-96 md:h-auto md:w-1/2 md:rounded-s-lg"

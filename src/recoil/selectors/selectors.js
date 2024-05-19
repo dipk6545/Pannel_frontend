@@ -1,5 +1,5 @@
 import { selector } from "recoil";
-import { alertState, tokenState } from "../atoms/atoms";
+import { alertState, tokenState, userState } from "../atoms/atoms";
 
 export const alertSelector = selector({
     key: "alertSelector",
@@ -11,9 +11,15 @@ export const alertSelector = selector({
 export const tokenSelector = selector({
     key: "tokenSelector",
     get: ({get})=>{
-        let token=localStorage.getItem("token");
         let tokenAtom=get(tokenState);
-        return token??tokenAtom;
+        return tokenAtom;
 
+    },
+})
+
+export const userSelector = selector({
+    key: "userSelector",
+    get: ({ get }) => {
+        return get(userState);
     },
 })

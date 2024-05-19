@@ -12,6 +12,7 @@ import SignUp from "./sections/SignUp.jsx";
 import ErrorPage from "./sections/ErrorPage.jsx";
 import { RecoilRoot } from "recoil";
 
+const token=localStorage.getItem("token");
 const router = createBrowserRouter([
   {
     path: "/",
@@ -46,9 +47,7 @@ const router = createBrowserRouter([
   },
 ]);
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
     <RecoilRoot>
       <RouterProvider router={router} />
     </RecoilRoot>
-  </React.StrictMode>
 );

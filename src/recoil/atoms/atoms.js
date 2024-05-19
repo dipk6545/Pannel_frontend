@@ -7,5 +7,15 @@ export const alertState = atom({
 
 export const tokenState = atom({
     key: "tokenState",
-    default: "",
+    default: undefined,
+})
+
+export const contactInfo = atom({
+    key: "contactInfo",
+    default: undefined,
+})
+
+export const userState = atom({
+    key: "userState",
+    default: undefined,
 })

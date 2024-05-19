@@ -1,63 +1,69 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { alertState, tokenState } from "../recoil/atoms/atoms";
+import { alertState, tokenState, userState } from "../recoil/atoms/atoms";
 import { useRecoilState } from "recoil";
+/**
+ * SignUp component for user registration
+ */
 const SignUp = () => {
+  // Initialize state variables
   const navigate = useNavigate();
   const [agreement, setAgreement] = useState(false);
   const [alert, setAlertState] = useRecoilState(alertState);
   const [token, setTokenState] = useRecoilState(tokenState);
+  const [user, setUserState] = useRecoilState(userState);
   const [values, setValues] = useState({
     username: "",
     email: "",
     password: "",
     phone: "",
   });
+
+  /**
+   * Handle change event for input fields
+   * @param {Object} e - Event object
+   * @param {string} name - Name of the input field
+   */
   const handleChange = (e, name) => {
     setValues({ ...values, [name]: e.target.value });
   };
 
+  /**
+   * Handle form submission for user registration
+   * @param {Object} e - Event object
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const { username, email, password, phone } = values;
     try {
-      let response = await fetch("http://localhost:5000/api/auth/register", {
+      const response = await fetch("http://localhost:5000/api/auth/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(values),
-        cache: 'default'
+        body: JSON.stringify({ username, email, password, phone }),
+        cache: "default",
       });
-      let res = await response.json();
-      if (response.status === 201) {
-        console.log(res);
+      const res = await response.json();
+      if (response.ok) {
         setTokenState(res.token);
         localStorage.setItem("token", res.token);
-        // setValues({
-        //   username: "",
-        //   email: "",
-        //   password: "",
-        //   phone: "",
-        // })
+        setUserState(res);
+        setValues({ username: "", email: "", password: "", phone: "" });
         setAlertState({ message: "Registered Successfully", flag: true });
         setTimeout(() => {
-          // navigate("/");
+          navigate("/");
           setAlertState({});
         }, 2000);
-      }
-      else {
-        console.log(res);
-        let message = "";
-        Object.entries(res).forEach(([key, value]) => {
-          message += Object.keys(res).length > 1 ? value + ", " : value;
-        });
-        setAlertState({ message, flag: false });
-        setTimeout(() => {
-          setAlertState({});
-        }, 2000);
+      } else {
+        const message = Object.values(res).join(", ");
+        throw new Error(message);
       }
     } catch (error) {
-      console.log(error);
+      setAlertState({ message: error.message, flag: false });
+      setTimeout(() => {
+        setAlertState({});
+      }, 2000);
     }
   };
 
@@ -189,7 +195,6 @@ const SignUp = () => {
             </div>
             <button
               type="submit"
-              // onClick={handleSubmit}
               className={`text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 disabled:opacity-75 ${agreement ? "" : "disabled:opacity-25 cursor-not-allowed"
                 }`}
               disabled={!agreement}
