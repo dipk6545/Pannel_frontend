@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRecoilValue } from "recoil";
 import { tokenSelector } from "../recoil/selectors/selectors";
 import { useRecoilState } from "recoil";
-import { alertState, contactInfo, tokenState } from "../recoil/atoms/atoms";
+import { contactInfo, tokenState } from "../recoil/atoms/atoms";
 import { useNavigate } from "react-router-dom";
 import Spinner from "../components/Spinner";
+import { toast } from "react-toastify";
 
 /**
  * Contact component
@@ -20,11 +21,7 @@ const Contact = () => {
   // State to track agreement checkbox
   const [agreement, setArgreement] = useState(false);
   // Get token from Recoil state
-  const token = useRecoilValue(tokenSelector);
-  // State to store alert message
-  const [alert, setAlertState] = useRecoilState(alertState);
-  // State to store token in Recoil state
-  const [_, setTokenState] = useRecoilState(tokenState);
+  const [token, setTokenState] = useRecoilState(tokenState);
   // State to show loading spinner
   const [spinner, setSpinner] = useState(false);
   // State to store user information
@@ -42,7 +39,7 @@ const Contact = () => {
         let response = await fetch("http://localhost:5000/api/auth/user", {
           method: "Get",
           headers: {
-            "Authorization": token,
+            "Authorization": localStorage.getItem("token"),
           },
           cache: 'default'
         });
@@ -51,9 +48,8 @@ const Contact = () => {
         if (response.status === 200) {
           let user = res.user;
           setContact(user);
-          setAlertState({ message: "Verified", flag: true });
+          toast.success("Verified");
           setTimeout(() => {
-            setAlertState({});
             setValues({
               username: user.username,
               email: user.email,
@@ -63,55 +59,45 @@ const Contact = () => {
           }, 2000);
         }
         else {
-          setSpinner(false);
-          throw new Error(JSON.stringify(res) || "Error occurred");
+          const message = Object.values(res).join(", ");
+          throw new Error(message);
         }
       }
       else {
-        setSpinner(false);
         setValues({
           username: contact.username,
           email: contact.email,
           message: "",
         });
+        setSpinner(false);
       }
     } catch (error) {
-      console.log('Error: ', error);
-      let message = error.message || "";
-      let errorMessageObject = JSON.parse(message);
-      message = "";
-      Object.entries(errorMessageObject).forEach(([key, value]) => {
-        message += Object.keys(errorMessageObject).length > 1 ? value + ", " : value;
-      });
-      setAlertState({ message, flag: false });
+      toast.error(error.message);
       setTimeout(() => {
         setTokenState(undefined);
-        setAlertState({});
-        setTimeout(() => {
-          setSpinner(false);
-          navigate("/login");
-        }, 2000);
+        navigate("/login");
       }, 2000);
     }
   }
 
   // Fetch user information on component mount
   useEffect(() => {
-    console.log('Indide contact useEffect');
-    if (token === undefined) {
+    if (token === undefined && localStorage.getItem("token") === null) {
+      console.log('Inside contact useEffect if');
+      toast.info("Please login to access this page");
       setSpinner(true);
       setTimeout(() => {
-        navigate("/");
-        setSpinner(false);
-      }, 1000);
+        navigate("/login");
+      }, 2000);
     }
     else {
+      console.log('Inside contact useEffect else');
+      setSpinner(true);
       setTimeout(() => {
-        setSpinner(true);
         fetchData();
       }, 1000);
     }
-  }, [])
+  }, [token])
 
   // Function to handle form submission
   const handleSubmit = async (e) => {
@@ -133,18 +119,13 @@ const Contact = () => {
           message: "",
         });
         setArgreement(false);
-        setAlertState({ message: "Email sent successfully", flag: true });
-        setTimeout(() => {
-          setAlertState({});
-        }, 2000);
+        toast.success("Email sent successfully");
       } else {
-        throw new Error(JSON.stringify(res) || "Email sending failed");
+        console.log(JSON.stringify(res));
+        throw new Error(res.message || "Email sending failed");
       }
     } catch (error) {
-      setAlertState({ message: error.message, flag: false });
-      setTimeout(() => {
-        setAlertState({});
-      }, 2000);
+      toast.error(error.message);
     }
   };
 

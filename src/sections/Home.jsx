@@ -1,5 +1,6 @@
 import React from "react";
 import Card from "../components/Card";
+import { useNavigate } from "react-router-dom";
 /**
  * The Home component renders the homepage of the website.
  * It displays an image and a description of the website.
@@ -9,6 +10,8 @@ import Card from "../components/Card";
  * @return {JSX.Element} The rendered Home component
  */
 const Home = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="bg-white dark:bg-gray-900">  {/* Container for the homepage */}
       <div className="container flex flex-col items-center md:gap-8 bg-white md:flex-row dark:bg-gray-900 max-w-screen-xl m-auto p-5 md:p-5">
@@ -16,6 +19,7 @@ const Home = () => {
           className="object-cover w-full rounded-lg h-96 md:h-auto md:w-1/2 md:rounded-s-lg"
           src="https://shorturl.at/stFW1"
           alt=""
+          loading="lazy"
         />
         <div className="flex flex-col justify-between p-4 leading-normal">
           <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
@@ -38,6 +42,7 @@ const Home = () => {
               <button
                 key={item}
                 type="button"
+                onClick={()=>navigate(item==="Connect Now" ? "/contact" : "/about")}
                 className={`text-white ${item === "Connect Now"
                   ? "bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
                   : "bg-transparent hover:bg-gray-400 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-none border"

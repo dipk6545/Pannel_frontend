@@ -1,12 +1,5 @@
 import { selector } from "recoil";
-import { alertState, tokenState, userState } from "../atoms/atoms";
-
-export const alertSelector = selector({
-    key: "alertSelector",
-    get: ({ get }) => {
-        return get(alertState);
-    }
-})
+import { adminState, tokenState, userState } from "../atoms/atoms";
 
 export const tokenSelector = selector({
     key: "tokenSelector",
@@ -21,5 +14,12 @@ export const userSelector = selector({
     key: "userSelector",
     get: ({ get }) => {
         return get(userState);
+    },
+})
+
+export const adminSelector = selector({
+    key: "adminSelector",
+    get: ({ get }) => {
+        return get(adminState);
     },
 })

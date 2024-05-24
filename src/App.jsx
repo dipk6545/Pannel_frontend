@@ -2,18 +2,18 @@ import React, { useCallback, useEffect, useState } from "react";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import { Outlet } from "react-router-dom";
-import Alert from "./components/Alert";
 import { useRecoilState } from "recoil";
-import { alertState, tokenState, userState } from "./recoil/atoms/atoms";
+import { adminState, tokenState, userState } from "./recoil/atoms/atoms";
+import { toast } from "react-toastify";
 /**
  * App component is the main component of the application.
  * It handles authentication and rendering of other components.
  */
 const App = () => {
-  // State hooks for alert and token state
-  const [_, setTokenState] = useRecoilState(tokenState);
-  const [alert, setAlertState] = useRecoilState(alertState);
+  // State hooks for token state
+  const [token, setTokenState] = useRecoilState(tokenState);
   const [user, setUserState] = useRecoilState(userState);
+  const [isAdmin, setGlobalAdmin] = useRecoilState(adminState); // State for the global admin status
 
   /**
    * Verifies the token by making a request to the server.
@@ -30,19 +30,26 @@ const App = () => {
         cache: 'default',
       });
       let res = await response.json();
-      if (response.status === 200) {
-        console.log('Token verified', res.user);
+      if (response.ok) {
         setUserState(res.user);
+
+        setGlobalAdmin(res.user.isAdmin);
+        console.log('res');
+        if (token === undefined) {
+          console.log('token: ', token);
+          setTokenState(localStorage.getItem("token"));
+          toast.success("Log in success");
+        }
+
+
       }
       else {
+        localStorage.clear();
         throw new Error("Token Expired, please login" || "Error occurred");
       }
     } catch (error) {
-      setAlertState({ message: error.message, flag: false });
-      setTimeout(() => {
-        setAlertState({});
-        setTokenState(undefined);
-      }, 2000);
+      toast.error(error.message);
+      setTokenState(undefined);
     }
   }
 
@@ -53,37 +60,29 @@ const App = () => {
    * If there is no token, displays a login message.
    */
   useEffect(() => {
-    // Log message indicating that the App component is running
-    console.log('I am app');
-
-    // Check if there is a token in the local storage
     if (localStorage.getItem("token") !== null) {
-      // Set the token state
-      setTokenState(localStorage.getItem("token"))
-      // Verify the token
-      verification();
+      setTimeout(() => {
+        // Verify the token
+        verification();
+      }, 1000);
+
     }
     else {
       // If there is no token, display a login message
       setTimeout(() => {
-        setAlertState({ message: "Please login", flag: false });
+        toast.info("Please login");
       }, 2000);
-      // Clear the alert state after 3 seconds
-      setTimeout(() => {
-        setAlertState({});
-      }, 3000)
     }
-  },[])
+  }, [])
+
 
   return (
     <>
-      {/* Render the alert component */}
-      <Alert />
       {/* Render the navbar component */}
       <Navbar />
       {/* Render the outlet component */}
       <Outlet />
-      {/* Render the footer component */}
+      {/* Render the toast component */}
       <Footer />
     </>
   );

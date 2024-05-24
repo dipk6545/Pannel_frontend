@@ -1,8 +1,11 @@
 import { useState, useEffect } from "react";
 import { NavLink, Link, useNavigate } from "react-router-dom";
 import Hamburger from "./Hamburger";
-import { useRecoilState } from "recoil";
-import { alertState, tokenState, userState } from "../recoil/atoms/atoms";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { adminState, tokenState, userState } from "../recoil/atoms/atoms";
+import { toast } from "react-toastify";
+import Spinner from "./Spinner";
+import { adminSelector } from "../recoil/selectors/selectors";
 
 /**
  * Navbar component displays the navigation bar at the top of the page.
@@ -10,16 +13,20 @@ import { alertState, tokenState, userState } from "../recoil/atoms/atoms";
  */
 const Navbar = () => {
   // Array of links to display in the navbar
-  const links = ["Home", "About", "Contact", "Services", "SignUp", "Login"];
+  const links = ["Home", "About", "Contact", "Services", "Admin", "SignUp", "Login"];
   // State for the classname of the navbar
   const [className, setClassname] = useState("hidden md:block w-full md:w-auto");
   // State for the token state
   const [token, setTokenState] = useRecoilState(tokenState);
-  // State for the alert state
-  const [_, setAlertState] = useRecoilState(alertState);
   // State for the user state
   const [user, setUserState] = useRecoilState(userState);
-  // Navigation hook
+  // State for the spinner visibility
+  const [spinner, setSpinner] = useState(false);
+  // State for the admin status
+  const isAdmin = useRecoilValue(adminSelector);
+  // State for the global admin status
+  const [_, setGlobalAdmin] = useRecoilState(adminState);
+  // Hook for navigating between routes
   const navigate = useNavigate();
 
   /**
@@ -50,16 +57,17 @@ const Navbar = () => {
    * Logs out the user if the Logout link is clicked.
    * @param {object} e - The event object
    */
-  const navLinkClick = (e) => {
+  const navLinkClick = async (e) => {
     if (e.target.innerHTML === "Logout") {
       localStorage.clear();
-      setAlertState({ flag: true, message: "Logged out successfully" });
+      toast.success("Logged out successfully");
       setTokenState(undefined);
       setUserState(undefined);
+      setSpinner(true);
+      setGlobalAdmin(false);
       setTimeout(() => {
-        navigate("/");
-        setAlertState({});
-      }, 2000);
+        setSpinner(false);
+      }, 1500);
     }
   };
 
@@ -67,25 +75,48 @@ const Navbar = () => {
    * Returns the navbar links as a list of NavLink components.
    * @returns {array} - The navbar links as a list of NavLink components
    */
-  const getLinks = () =>
-    links.map((link, index) => (
-      <li key={index + link}>
-        <NavLink
-          to={link === "Home" ? "" : `/${link}`}
-          style={activeLink}
-          className={`block md:py-2 md:px-3 text-white hover:text-red-500 border border-slate-800 rounded-lg md:border-none my-2 py-2 hover:bg-gray-400 ${
-            (link === "SignUp" || link === "Login") && token ? "hidden" : "block"
-          }`}
-          aria-current="page"
-          onClick={link === "Logout" ? navLinkClick : undefined}
-        >
-          {link}
-        </NavLink>
-      </li>
-    ));
+  const getLinks = () => {
+    return links.map((link, index) => {
+      if (isAdmin && link === "Admin") {
+        return (
+          <li key={index + link}>
+            <NavLink
+              to={`/${link.toLowerCase()}`}
+              style={activeLink}
+              className={`block md:py-2 md:px-3 text-white hover:text-red-500 border border-slate-800 rounded-lg md:border-none my-2 py-2 hover:bg-gray-400 ${(link === "SignUp" || link === "Login") && token ? "hidden" : "block"
+                }`}
+              aria-current="page"
+              onClick={link === "Logout" ? navLinkClick : undefined}
+            >
+              {link}
+            </NavLink>
+          </li>
+        );
+      } else if (!isAdmin && link === "Admin") {
+        return null; // Skip rendering the "Admin" link
+      }
+      else {
+        return (
+          <li key={index + link}>
+            <NavLink
+              to={link === "Home" ? "" : `/${link.toLowerCase()}`}
+              style={activeLink}
+              className={`block md:py-2 md:px-3 text-white hover:text-red-500 border border-slate-800 rounded-lg md:border-none my-2 py-2 hover:bg-gray-400 ${(link === "SignUp" || link === "Login") && token ? "hidden" : "block"
+                }`}
+              aria-current="page"
+              onClick={link === "Logout" ? navLinkClick : undefined}
+            >
+              {link}
+            </NavLink>
+          </li>
+        );
+      }
+    });
+  };
 
   return (
     <nav className="bg-white dark:bg-gray-900">
+      {spinner && <Spinner />}
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
         <Link
           to="/"

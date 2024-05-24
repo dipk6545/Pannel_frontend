@@ -11,8 +11,12 @@ import Login from "./sections/Login.jsx";
 import SignUp from "./sections/SignUp.jsx";
 import ErrorPage from "./sections/ErrorPage.jsx";
 import { RecoilRoot } from "recoil";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Admin from "./sections/Admin.jsx";
+import AdminUser from "./sections/AdminUser.jsx";
+import AdminContacts from "./sections/AdminContacts.jsx";
 
-const token=localStorage.getItem("token");
 const router = createBrowserRouter([
   {
     path: "/",
@@ -40,14 +44,31 @@ const router = createBrowserRouter([
         element: <Login />,
       },
       {
+        path: "/admin",
+        element: <Admin />,
+        children: [
+          {
+            path: "/admin/user",
+            element: <AdminUser />,
+          },
+          {
+            path: "/admin/contact",
+            element: <AdminContacts />,
+          }
+        ]
+      },
+      {
         path: "/signup",
         element: <SignUp />,
       },
     ],
   },
 ]);
+
 ReactDOM.createRoot(document.getElementById("root")).render(
-    <RecoilRoot>
-      <RouterProvider router={router} />
-    </RecoilRoot>
+  <RecoilRoot>
+    <RouterProvider router={router} />
+    <ToastContainer position="top-center" autoClose={1500} limit={1} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss={false} draggable pauseOnHover={false} theme="colored" transition:Bounce />
+    {/* Render the footer component */}
+  </RecoilRoot>
 );
