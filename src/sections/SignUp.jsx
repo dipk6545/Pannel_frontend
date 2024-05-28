@@ -11,9 +11,9 @@ const SignUp = () => {
   const navigate = useNavigate();
   const [agreement, setAgreement] = useState(false);
   const [u, setUserState] = useRecoilState(userState); // Set user state
-  const [t, setTokenState] = useRecoilState(tokenState);  
+  const [t, setTokenState] = useRecoilState(tokenState);
   const [_, setGlobalAdmin] = useRecoilState(adminState); // Set admin link state
-  const [values, setValues] = useState({username: "", email: "", password: "", repeatPassword: "", phone: "", isAdmin: false});
+  const [values, setValues] = useState({ username: "", email: "", password: "", repeatPassword: "", phone: "", isAdmin: false });
 
   /**
    * Handle change event for input fields
@@ -37,7 +37,7 @@ const SignUp = () => {
     const { username, email, password, phone, isAdmin } = values;
 
     try {
-      if(values.password !== values.repeatPassword) {
+      if (values.password !== values.repeatPassword) {
         throw new Error("Passwords do not match");
       }
 
@@ -66,7 +66,7 @@ const SignUp = () => {
         console.log("res", res.isAdmin);
         setGlobalAdmin(res.isAdmin);
         setTokenState(res.token);
-        setUserState(res);        
+        setUserState(res);
         setValues({
           username: "",
           email: "",
@@ -96,6 +96,7 @@ const SignUp = () => {
             className="w-full md:rounded-s-lg rounded-lg"
             src="https://shorturl.at/stFW1"
             alt=""
+            loading="lazy"
           />
         </div>
         <div className="md:w-1/2 p-5">

@@ -34,9 +34,7 @@ const App = () => {
         setUserState(res.user);
 
         setGlobalAdmin(res.user.isAdmin);
-        console.log('res');
         if (token === undefined) {
-          console.log('token: ', token);
           setTokenState(localStorage.getItem("token"));
           toast.success("Log in success");
         }

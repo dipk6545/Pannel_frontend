@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { AdminCard } from '../components/AdminCard'
 import { toast } from 'react-toastify';
 
-const AdminUser = () => {
+const AdminContacts = () => {
     const [data, setData] = useState([]);
     async function fetchData() {
         try {
@@ -79,7 +79,7 @@ const AdminUser = () => {
         <div className="w-full h-full border-2 border-white p-2">
             <div className='grid grid-cols-4 justify-items-center'>
                 {
-                    data.map((item) => <AdminCard username={item.username} email={item.email} key={item._id} handleClick={handleClick} />)
+                    data.map((item) => <AdminCard data={item} key={item._id} handleClick={handleClick} />)
                 }
             </div>
 
@@ -87,4 +87,4 @@ const AdminUser = () => {
     )
 }
 
-export default AdminUser
+export default AdminContacts

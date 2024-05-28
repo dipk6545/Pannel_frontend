@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate, Outlet } from "react-router-dom"
 import { useRecoilValue } from 'recoil'
-import { tokenSelector } from '../recoil/selectors/selectors'
+import { adminSelector, tokenSelector } from '../recoil/selectors/selectors'
 import Spinner from '../components/Spinner'
+import { toast } from 'react-toastify'
+import { AdminModal } from '../components/AdminModal'
 
 /**
  * Admin component is the main component of the admin panel.
@@ -12,6 +14,7 @@ const Admin = () => {
     const token = useRecoilValue(tokenSelector) // Get the token from the state
     const [spin, setSpin] = useState(true) // State for the spinner
     const navigate = useNavigate() // Navigation hook
+    const isAdmin = useRecoilValue(adminSelector);
 
     useEffect(() => {
         setTimeout(() => {
@@ -20,14 +23,20 @@ const Admin = () => {
                 return;
             }
         }, 2000);
-        setTimeout(() => setSpin(false), 2000) // Hide the spinner after 2 seconds
+        if(isAdmin)
+            setTimeout(() => setSpin(false), 2000) // Hide the spinner after 2 seconds
+        else{
+            navigate('/')
+            toast.error("Unauthorized access")
+        }
     }, [localStorage.getItem("token")])
 
     return (
         <section>
-            <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
+            <AdminModal/>
+            <div className="grid grid-cols-6 gap-4 h-screen bg-gray-100 dark:bg-gray-900">
                 {spin && <Spinner />} {/* Render spinner */}
-                <div className="hidden md:flex flex-col w-64 dark:bg-gray-900 relative top-16">
+                <div className="w-64 dark:bg-gray-900 pt-16 top-16 ">
                     <div className="flex flex-col flex-1 overflow-y-auto">
                         <nav className="flex-1 px-2 py-4">
                             {/* Navigation links */}
@@ -48,9 +57,9 @@ const Admin = () => {
                 </div>
 
                 {/* Main content */}
-                <div className='flex flex-col flex-1 dark:bg-gray-900 m-3'>
+                <div className='flex flex-col flex-1 dark:bg-gray-900 m-3 col-span-5'>
                     <h1 className="mb-4 text-4xl text-center font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">Admin Panel</h1>
-                    <Outlet /> {/* Render the component for the current route */}
+                    <Outlet/>
                 </div>
             </div>
         </section>

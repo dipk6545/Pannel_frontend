@@ -18,3 +18,18 @@ export const adminState = atom({
     key: "adminState",
     default: false,
 })
+
+export const modalState = atom({
+    key: "modalState",
+    default: false,
+})
+
+export const adminUserState = atom({
+    key: "adminUserState",
+    default: "",
+})
+
+export const adminUserPublish=atom({
+    key:"adminUserPublish",
+    default:undefined
+})

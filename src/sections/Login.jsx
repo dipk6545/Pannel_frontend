@@ -62,6 +62,7 @@ const Login = () => {
           className="object-cover w-full rounded-lg h-96 md:h-auto md:w-1/2 md:rounded-s-lg"
           src="https://shorturl.at/stFW1"
           alt=""
+          loading="lazy"
         />
         <div className="w-full ">
           <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white md:text-4xl lg:text-4xl text-center mb-10 relative top-0">
