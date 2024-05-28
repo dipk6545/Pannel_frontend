@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate, Outlet } from "react-router-dom"
-import { useRecoilValue } from 'recoil'
+import { useRecoilState, useRecoilValue } from 'recoil'
 import { adminSelector, tokenSelector } from '../recoil/selectors/selectors'
 import Spinner from '../components/Spinner'
 import { toast } from 'react-toastify'
 import { AdminModal } from '../components/AdminModal'
+import { adminState } from '../recoil/atoms/atoms'
 
 /**
  * Admin component is the main component of the admin panel.
@@ -15,6 +16,8 @@ const Admin = () => {
     const [spin, setSpin] = useState(true) // State for the spinner
     const navigate = useNavigate() // Navigation hook
     const isAdmin = useRecoilValue(adminSelector);
+    const [_, setGlobalAdmin] = useRecoilState(adminState);
+
 
     useEffect(() => {
         setTimeout(() => {
@@ -27,6 +30,7 @@ const Admin = () => {
             setTimeout(() => setSpin(false), 2000) // Hide the spinner after 2 seconds
         else{
             navigate('/')
+            setGlobalAdmin(false);
             toast.error("Unauthorized access")
         }
     }, [localStorage.getItem("token")])

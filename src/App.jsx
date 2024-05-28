@@ -43,6 +43,9 @@ const App = () => {
       }
       else {
         localStorage.clear();
+        setGlobalAdmin(false);
+        setTokenState(undefined);
+        setUserState(undefined);
         throw new Error("Token Expired, please login" || "Error occurred");
       }
     } catch (error) {
@@ -67,11 +70,12 @@ const App = () => {
     }
     else {
       // If there is no token, display a login message
-      setTimeout(() => {
-        toast.info("Please login");
-      }, 2000);
+      setGlobalAdmin(false);
+      setTokenState(undefined);
+      setUserState(undefined);
+      toast.info("Please login");
     }
-  }, [])
+  }, [localStorage.getItem("token")])
 
 
   return (
